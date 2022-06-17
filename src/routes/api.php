@@ -28,5 +28,6 @@ Route::apiResource('course', CourseController::class);
 
 
 Route::get('user', [UserController::class, 'index']);
+Route::get('user/ranking', [UserController::class, 'userRanking']);
 Route::get('user/{id}/course/{course_id}', [UserController::class, 'storeCourse']);
 Route::get('user/{id}/course/{course_id}/subject/{subject_id}/score/{score}', [UserController::class, 'storeSubjectScore']);

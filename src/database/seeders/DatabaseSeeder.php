@@ -28,10 +28,10 @@ class DatabaseSeeder extends Seeder
         $courses = Course::all();
         User::all()->each(function ($user) use ($courses, $faker) {
             $coursesToSave = $courses->random(rand(1, 5))->pluck('id')->toArray();
+            $isAllApproved = rand(0, 1);
             foreach($coursesToSave as $course_id) {
                 $user->courses()->attach($course_id);
                 $subjects = Subject::where('course_id', '=', $course_id)->pluck('id')->toArray();
-                $isAllApproved = rand(0, 1);
                 foreach($subjects as $subject_id) {
                     if ($isAllApproved === 1) {
                         $score = rand(12, 20);
