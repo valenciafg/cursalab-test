@@ -17,7 +17,8 @@ class CreateSubjectUserTable extends Migration
             $table->id();
             $table->unsignedBigInteger('subject_id')->unsigned();
             $table->unsignedBigInteger('user_id')->unsigned();
-            $table->unsignedTinyInteger('score');
+            $table->unsignedTinyInteger('score')->nullable()->default(null);
+            $table->unsignedTinyInteger('attempts')->nullable()->default(null);
             $table->timestamps();
 
             $table->foreign('subject_id')->references('id')->on('subjects')

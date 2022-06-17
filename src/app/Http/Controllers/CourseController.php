@@ -14,8 +14,8 @@ class CourseController extends Controller
      */
     public function index()
     {
-        $course = Course::all();
-        return response($course);
+        $courses = Course::with('category')->get();
+        return response($courses);
     }
 
     /**
@@ -43,7 +43,7 @@ class CourseController extends Controller
      */
     public function show($id)
     {
-        $course = Course::findOrFail($id);
+        $course = Course::with('category')->findOrFail($id);
         return response($course);
     }
 

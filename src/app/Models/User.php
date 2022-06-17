@@ -43,9 +43,12 @@ class User extends Authenticatable
     ];
 
     public function courses() {
-        $this->hasMany('App\Models\Course');
+        return $this->belongsToMany('App\Models\Course')
+            ->withTimestamps();
     }
     public function subjects() {
-        $this->hasMany('App\Models\Subject');
+        return $this->belongsToMany('App\Models\Subject')
+            ->withPivot(['score', 'attempts', 'created_at', 'updated_at'])
+            ->withTimestamps();
     }
 }
