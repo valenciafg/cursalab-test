@@ -24,15 +24,15 @@ class UserController extends Controller
         return response($users);
     }
 
-    public function userRanking()
+    public function userRanking($top)
     {
         $list = UserCourseSubject::all()->toArray();
-        $users = [];
-        foreach($list as $l) {
-            $users[] = $l['email'];
-        }
+        $users = array_column($list, 'email');
         // Obtiene lista de usuarios unicos
         $users = array_values(array_unique($users));
+        if ($top < 1 || $top > sizeof($users)) {
+            return response(["error" => 'Invalid top value'], 400);
+        }
         $coursesByUser = [];
         foreach($users as $user) {
             $courses = [];
@@ -51,7 +51,6 @@ class UserController extends Controller
             }
             // Obtiene lista cursos y temas por usuario
             $courses = array_values(array_unique($courses));
-            $coursesWithSubject = [];
             $approvedTotal = 0;
             $completedTotal = 0;
             $lastDayFromAllCourses = new DateTime();
@@ -60,7 +59,6 @@ class UserController extends Controller
                 $subjects = [];
                 $isCompleted = true;
                 $isApproved = true;
-                $lastDay = new DateTime();
                 foreach($subjectsByUser as $s) {
                     if ($c === $s['course_id']) {
                         $totalAttempts += $s['attempts'];
@@ -71,28 +69,17 @@ class UserController extends Controller
                             $isApproved = false;
                         }
                         $date = new DateTime($s['updated_at']);
-                        if ($date < $lastDay) {
-                            $lastDay = $date;
+                        if ($date < $lastDayFromAllCourses) {
+                            $lastDayFromAllCourses = $date;
                         }
                         $subjects[] = $s;
                     }
                 }
-                $coursesWithSubject[] = [
-                    'course_id' => $c,
-                    'isCompleted' => $isCompleted,
-                    'isApproved' => $isApproved,
-                    'totalAttempts' => $totalAttempts,
-                    'lastDay' => $lastDay->format('Y-m-d H:i:s'),
-                    'subjects' => $subjects
-                ];
                 if ($isApproved === true) {
                     $approvedTotal += 1;
                 }
                 if ($isCompleted === true) {
                     $completedTotal += 1;
-                }
-                if($lastDayFromAllCourses < $lastDay) {
-                    $lastDayFromAllCourses = $lastDay;
                 }
             }
             $coursesSize = sizeof($courses);
@@ -100,14 +87,29 @@ class UserController extends Controller
                 "email" => $user,
                 "coursesTotal" => $coursesSize,
                 'approvedTotal' => $approvedTotal,
-                'lastDayFromAllCourses' => $lastDayFromAllCourses->format('Y-m-d H:i:s'),
+                'lastDay' => $lastDayFromAllCourses->format('Y-m-d H:i:s'),
                 'completedAverage' => $completedTotal / $coursesSize,
-                'attemptsAverage' => $totalAttempts / $coursesSize,
-                //  "courses" => $coursesWithSubject
+                'totalAttempts' => $totalAttempts
             ];
         }
-        // return response($list);
-        return response($coursesByUser);
+        //  Ordenamientos por:
+        //  -   Total de cursos aprobados
+        //  -   Promedio de cursos completados
+        //  -   Fecha de ultimo curso aprobado
+        //  -   Total de intentos
+        $approvedTotalList = array_column($coursesByUser, 'approvedTotal');
+        $completedAverageList = array_column($coursesByUser, 'completedAverage');
+        $lastDayList = array_column($coursesByUser, 'lastDay');
+        $totalAttemptsList = array_column($coursesByUser, 'totalAttempts');
+        array_multisort(
+            $approvedTotalList, SORT_DESC,
+            $completedAverageList, SORT_DESC,
+            $lastDayList, SORT_DESC,
+            $totalAttemptsList, SORT_ASC,
+            $coursesByUser
+        );
+        $topList = array_slice($coursesByUser, 0, $top);
+        return response($topList);
     }
 
     /**
@@ -150,8 +152,14 @@ class UserController extends Controller
      */
     public function storeSubjectScore($id, $course_id, $subject_id, $score)
     {
-        //  return response(["error" => 'invalid subject'], 400);
-        //  return response(["error" => 'invalid course'], 400);
+        $existCourse = User::whereRelation('courses', 'course_id', '=', $course_id)->find($id);
+        if (!$existCourse) {
+            return response(["error" => 'the user is not registered to this course'], 400);
+        }
+        $existSubject = User::whereRelation('subjects', 'subject_id', '=', $subject_id)->find($id);
+        if (!$existSubject) {
+            return response(["error" => 'the user is not registered to this subject'], 400);
+        }
         if ($score < 0 || $score > 20 ) {
             return response(["error" => 'invalid score'], 400);
         }
