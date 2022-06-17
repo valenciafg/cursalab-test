@@ -18,7 +18,9 @@ class CourseFactory extends Factory
         return [
             'name' => $this->faker->sentence(),
             'description' => $this->faker->paragraph(),
-            'category_id' => rand(1, 50)
+            'category_id' => rand(1, 50),
+            'created_at' => $this->faker->dateTimeBetween('-2 years'),
+            'updated_at' => $this->faker->dateTimeBetween('-1 year')
         ];
     }
 }

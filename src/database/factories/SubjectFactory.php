@@ -14,10 +14,12 @@ class SubjectFactory extends Factory
     public function definition()
     {
         return [
-            'name' => $this->faker->text(255),
+            'name' => $this->faker->sentence(5),
             'description' => $this->faker->sentence(5),
             'content' => $this->faker->paragraph(20),
-            'course_id' => rand(1, 30)
+            'course_id' => rand(1, 30),
+            'created_at' => $this->faker->dateTimeBetween('-2 years'),
+            'updated_at' => $this->faker->dateTimeBetween('-1 year')
         ];
     }
 }
