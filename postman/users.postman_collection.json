@@ -1,0 +1,95 @@
+{
+	"info": {
+		"_postman_id": "f551bbaf-6e97-49af-a8f4-fa80b70a0993",
+		"name": "users",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "391274"
+	},
+	"item": [
+		{
+			"name": "add course",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{url}}/api/user/1/course/3",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"api",
+						"user",
+						"1",
+						"course",
+						"3"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get all",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{url}}/api/user",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"api",
+						"user"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Ranking",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{url}}/api/user/ranking/top/5",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"api",
+						"user",
+						"ranking",
+						"top",
+						"5"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "add score",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{url}}/api/user/1/course/2/subject/1/score/10",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"api",
+						"user",
+						"1",
+						"course",
+						"2",
+						"subject",
+						"1",
+						"score",
+						"10"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
